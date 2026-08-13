@@ -5,10 +5,8 @@ import {
   ExternalLink,
   X,
   Building2,
-  Calendar,
   Sun,
-  Moon,
-  Filter
+  Moon
 } from 'lucide-react';
 
 export default function App() {
@@ -27,7 +25,6 @@ export default function App() {
 
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
-  const [selectedYear, setSelectedYear] = useState('ALL');
 
   const searchRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -89,7 +86,6 @@ export default function App() {
 
   const loadAnnualReports = async (scripCode) => {
     setIsLoadingReports(true);
-    setSelectedYear('ALL');
     try {
       const res = await fetch(`/api/annual-reports/${scripCode}`);
       const data = await res.json();
@@ -149,35 +145,6 @@ export default function App() {
       }
     }
   };
-
-  const formatDate = (isoStr) => {
-    if (!isoStr) return 'N/A';
-    try {
-      const d = new Date(isoStr);
-      return d.toLocaleDateString('en-IN', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-      });
-    } catch {
-      return isoStr;
-    }
-  };
-
-  // Extract available years for dropdown filter
-  const availableYears = Array.from(
-    new Set(reports.map(r => r.year).filter(Boolean))
-  ).sort((a, b) => {
-    const numA = parseInt(a, 10);
-    const numB = parseInt(b, 10);
-    if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
-    return b.localeCompare(a);
-  });
-
-  // Filter reports by selected year
-  const filteredReports = selectedYear === 'ALL'
-    ? reports
-    : reports.filter(r => r.year === selectedYear);
 
   return (
     <div className="app-container">
@@ -353,85 +320,7 @@ export default function App() {
           </div>
         </div>
       )}
-
-      {/* Annual Reports Section Header & Year Dropdown */}
-      <div className="reports-section-title">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <FileText size={20} color="var(--accent-primary)" />
-          <span>Annual Financial Reports</span>
-        </div>
-
-        <div className="filter-controls">
-          {/* Year Filter Dropdown */}
-          <div className="year-select-wrapper">
-            <Filter size={15} />
-            <label htmlFor="yearSelect">Year:</label>
-            <select
-              id="yearSelect"
-              className="year-dropdown"
-              value={selectedYear}
-              onChange={(e) => setSelectedYear(e.target.value)}
-            >
-              <option value="ALL">All Years ({reports.length})</option>
-              {availableYears.map(yr => (
-                <option key={yr} value={yr}>FY {yr}</option>
-              ))}
-            </select>
-          </div>
-
-          <span className="reports-count">{filteredReports.length} Reports</span>
-        </div>
-      </div>
-
-      {/* Reports Table */}
-      <div className="table-wrapper">
-        {isLoadingReports ? (
-          <div className="loading-box">
-            <div className="spinner"></div>
-            <p>Fetching Annual Reports from BSE Directory for Scrip Code {selectedCompany?.scripCode}...</p>
-          </div>
-        ) : filteredReports.length > 0 ? (
-          <table className="reports-table">
-            <thead>
-              <tr>
-                <th>Financial Year</th>
-                <th>Filing Date</th>
-                <th style={{ textAlign: 'right' }}>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredReports.map((report, index) => (
-                <tr key={index}>
-                  <td>
-                    <span className="year-badge">
-                      <Calendar size={15} /> FY {report.year}
-                    </span>
-                  </td>
-                  <td style={{ color: 'var(--text-secondary)' }}>
-                    {formatDate(report.rawDate)}
-                  </td>
-                  <td style={{ textAlign: 'right' }}>
-                    {/* Direct Open PDF in New Tab */}
-                    <a
-                      href={report.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn btn-primary"
-                    >
-                      <ExternalLink size={16} /> Open PDF
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <div className="empty-box">
-            <FileText size={40} style={{ opacity: 0.3, marginBottom: '0.75rem' }} />
-            <p>No annual reports found for {selectedYear !== 'ALL' ? `FY ${selectedYear}` : selectedCompany?.name}.</p>
-          </div>
-        )}
-      </div>
     </div>
   );
 }
+
