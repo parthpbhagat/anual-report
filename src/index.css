@@ -350,6 +350,15 @@ body {
   border-top: 1px dashed var(--border-color);
 }
 
+.pdf-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.85rem;
+  flex-wrap: wrap;
+}
+
 .pdf-section-label {
   display: flex;
   align-items: center;
@@ -357,8 +366,21 @@ body {
   font-size: 0.9rem;
   font-weight: 800;
   color: var(--text-primary);
-  margin-bottom: 0.85rem;
 }
+
+.year-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  font-size: 0.825rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+
+.year-filter-wrapper label {
+  color: var(--text-muted);
+}
+
 
 .pdf-buttons-list {
   display: grid;

@@ -6,7 +6,8 @@ import {
   X,
   Building2,
   Sun,
-  Moon
+  Moon,
+  Filter
 } from 'lucide-react';
 
 export default function App() {
@@ -25,6 +26,7 @@ export default function App() {
 
   const [reports, setReports] = useState([]);
   const [isLoadingReports, setIsLoadingReports] = useState(false);
+  const [selectedYear, setSelectedYear] = useState('ALL');
 
   const searchRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -86,6 +88,7 @@ export default function App() {
 
   const loadAnnualReports = async (scripCode) => {
     setIsLoadingReports(true);
+    setSelectedYear('ALL');
     try {
       const res = await fetch(`/api/annual-reports/${scripCode}`);
       const data = await res.json();
@@ -145,6 +148,21 @@ export default function App() {
       }
     }
   };
+
+  // Available unique financial years sorted descending
+  const availableYears = Array.from(
+    new Set(reports.map(r => r.year).filter(Boolean))
+  ).sort((a, b) => {
+    const numA = parseInt(a, 10);
+    const numB = parseInt(b, 10);
+    if (!isNaN(numA) && !isNaN(numB)) return numB - numA;
+    return b.localeCompare(a);
+  });
+
+  // Filter reports according to selected year
+  const filteredReports = selectedYear === 'ALL'
+    ? reports
+    : reports.filter(r => r.year === selectedYear);
 
   return (
     <div className="app-container">
@@ -286,19 +304,40 @@ export default function App() {
               </div>
             </div>
 
-            {/* Annual Report PDF Link Buttons under Company Name */}
+            {/* Annual Report PDF Link Buttons with Inline Year Filter */}
             <div className="company-pdf-section">
-              <div className="pdf-section-label">
-                <FileText size={15} color="var(--accent-primary)" />
-                <span>Company Annual Report PDFs ({reports.length}):</span>
+              <div className="pdf-section-header">
+                <div className="pdf-section-label">
+                  <FileText size={16} color="var(--accent-primary)" />
+                  <span>Company Annual Report PDFs ({filteredReports.length}):</span>
+                </div>
+
+                {availableYears.length > 0 && (
+                  <div className="year-filter-wrapper">
+                    <Filter size={14} color="var(--accent-primary)" />
+                    <label htmlFor="pdfYearFilter">Filter Year:</label>
+                    <select
+                      id="pdfYearFilter"
+                      className="year-dropdown"
+                      value={selectedYear}
+                      onChange={(e) => setSelectedYear(e.target.value)}
+                    >
+                      <option value="ALL">All Years ({reports.length})</option>
+                      {availableYears.map(yr => (
+                        <option key={yr} value={yr}>FY {yr}</option>
+                      ))}
+                    </select>
+                  </div>
+                )}
               </div>
+
               {isLoadingReports ? (
                 <div className="pdf-buttons-loading">
                   <div className="spinner-sm"></div> Fetching PDF links for {selectedCompany.name}...
                 </div>
-              ) : reports.length > 0 ? (
+              ) : filteredReports.length > 0 ? (
                 <div className="pdf-buttons-list">
-                  {reports.map((report, idx) => (
+                  {filteredReports.map((report, idx) => (
                     <a
                       key={idx}
                       href={report.pdfUrl}
@@ -314,7 +353,7 @@ export default function App() {
                   ))}
                 </div>
               ) : (
-                <span className="no-pdf-text">No PDF files available for this company.</span>
+                <span className="no-pdf-text">No PDF files available for the selected filter.</span>
               )}
             </div>
           </div>
@@ -323,4 +362,5 @@ export default function App() {
     </div>
   );
 }
+
 
