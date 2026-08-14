@@ -44,7 +44,21 @@ node server/scripts/scrapeAndStore.js
 
 ---
 
-## 🔐 3. Login Page ને Enable / Disable (ON/OFF) કરવાના સેટિંગ્સ
+## 📊 3. Supabase Cloud Database Data Test કરવાનો Command
+
+Supabase Cloud DB અને Local Database માં કેટલી કંપનીઓ અને કેટલા PDF સ્ટોર થયેલા છે તેનું લાઈવ સ્ટેટસ જોવા માટે:
+
+```bash
+npm run check-db
+```
+અથવા
+```bash
+node server/scripts/checkDb.js
+```
+
+---
+
+## 🔐 4. Login Page ને Enable / Disable (ON/OFF) કરવાના સેટિંગ્સ
 
 આ પ્રોજેક્ટમાં લૉગિન સિસ્ટમ મોડ્યુલર (Separate) છે.
 
