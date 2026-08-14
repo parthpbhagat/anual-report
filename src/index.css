@@ -857,135 +857,20 @@ body {
    RESPONSIVE DESIGN
    ========================================= */
 
-/* Tablet & small desktop */
-@media (max-width: 900px) {
-  .app-container {
-    padding: 2rem 1.25rem;
-  }
+/* =========================================
+   RESPONSIVE DESIGN (Mobile & Tablet)
+   ========================================= */
 
-  .header-title {
-    font-size: 2.2rem;
-  }
-}
-
-/* Tablet */
 @media (max-width: 768px) {
   .app-container {
-    padding: 1.5rem 1rem;
-  }
-
-  .header {
-    margin-bottom: 2rem;
-  }
-
-  .header-title {
-    font-size: 1.85rem;
-    letter-spacing: -0.02em;
-  }
-
-  .header-subtitle {
-    font-size: 0.95rem;
-  }
-
-  /* Search section full width */
-  .search-section {
-    max-width: 100%;
-    margin-bottom: 2rem;
-  }
-
-  .search-input {
-    font-size: 0.95rem;
-    padding: 1rem 1rem 1rem 3rem;
-  }
-
-  /* Company card stacks vertically */
-  .selected-company-card {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-    padding: 1.25rem 1.25rem;
-  }
-
-  .company-header-title {
-    font-size: 1.2rem;
-  }
-
-  .company-meta-pills {
-    gap: 0.5rem;
-  }
-
-  .meta-pill {
-    font-size: 0.8rem;
-    padding: 0.3rem 0.65rem;
-  }
-
-  /* Reports section title stacks */
-  .reports-section-title {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.75rem;
-  }
-
-  .filter-controls {
-    width: 100%;
-    justify-content: space-between;
-  }
-
-  /* Preset chips wrap neatly */
-  .preset-container {
-    gap: 0.5rem;
-    margin-top: 0.85rem;
-    font-size: 0.8rem;
-  }
-
-  .preset-chip {
-    padding: 0.3rem 0.7rem;
-    font-size: 0.78rem;
-  }
-
-  /* Table: enable horizontal scroll */
-  .table-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .reports-table {
-    min-width: 500px;
-  }
-
-  .reports-table th,
-  .reports-table td {
-    padding: 0.9rem 1.1rem;
-    font-size: 0.875rem;
-    white-space: nowrap;
-  }
-
-  /* Dropdown sub-details stack */
-  .bse-sub-details {
-    flex-wrap: wrap;
-    gap: 0.4rem;
-  }
-
-  /* Button full touch target */
-  .btn {
-    padding: 0.55rem 1.1rem;
-    font-size: 0.825rem;
-  }
-}
-
-/* Mobile */
-@media (max-width: 480px) {
-  .app-container {
-    padding: 1.1rem 0.75rem;
+    padding: 1.25rem 0.85rem;
   }
 
   .top-navbar {
-    margin-bottom: 0.85rem;
-  }
-
-  .theme-toggle-btn {
-    padding: 0.4rem 0.85rem;
-    font-size: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
   }
 
   .header {
@@ -993,159 +878,123 @@ body {
   }
 
   .header-title {
-    font-size: 1.5rem;
-    letter-spacing: -0.015em;
+    font-size: 1.8rem;
   }
 
   .header-subtitle {
-    font-size: 0.875rem;
+    font-size: 0.9rem;
+  }
+
+  .search-section {
+    max-width: 100%;
+    margin-bottom: 1.75rem;
   }
 
   .search-input {
     font-size: 0.9rem;
-    padding: 0.9rem 2.75rem;
+    padding: 0.9rem 2.5rem 0.9rem 2.6rem;
   }
 
   .search-icon {
-    left: 1rem;
-  }
-
-  .autocomplete-item {
-    padding: 0.85rem 1rem;
-  }
-
-  .selected-company-card {
-    padding: 1rem;
-  }
-
-  .company-header-title {
-    font-size: 1.05rem;
-  }
-
-  .meta-pill {
-    font-size: 0.75rem;
-    padding: 0.25rem 0.55rem;
-  }
-
-  /* Year filter stacks on very small screens */
-  .filter-controls {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-
-  .year-select-wrapper {
-    font-size: 0.8rem;
-  }
-
-  .year-dropdown {
-    font-size: 0.825rem;
-    padding: 0.4rem 0.75rem;
-  }
-
-  .reports-count {
-    font-size: 0.775rem;
-  }
-
-  .reports-table {
-    min-width: 420px;
-  }
-
-  .reports-table th {
-    padding: 0.75rem 0.9rem;
-    font-size: 0.78rem;
-  }
-
-  .reports-table td {
-    padding: 0.75rem 0.9rem;
-    font-size: 0.85rem;
-  }
-
-  .btn {
-    padding: 0.5rem 0.9rem;
-    font-size: 0.8rem;
-    gap: 0.35rem;
-  }
-
-  .loading-box,
-  .empty-box {
-    padding: 2.5rem 1.25rem;
-    font-size: 0.9rem;
+    left: 0.9rem;
   }
 
   .preset-container {
-    justify-content: flex-start;
+    gap: 0.4rem;
+    font-size: 0.775rem;
+    margin-top: 0.75rem;
+  }
+
+  .preset-chip {
+    padding: 0.3rem 0.65rem;
+    font-size: 0.75rem;
+  }
+
+  /* Matrix Table Mobile Optimizations */
+  .matrix-header {
+    padding: 0.9rem 1rem;
+    flex-direction: row;
+    align-items: center;
+  }
+
+  .matrix-title {
+    font-size: 0.975rem;
+  }
+
+  .matrix-table th {
+    padding: 0.85rem 0.75rem;
+    font-size: 0.8rem;
+  }
+
+  .matrix-table td {
+    padding: 0.65rem 0.5rem;
+  }
+
+  /* Sticky first column tuned for mobile screens */
+  .matrix-table .sticky-col {
+    min-width: 175px;
+    max-width: 200px;
+  }
+
+  .company-name-text {
+    font-size: 0.825rem;
+    word-break: break-word;
+  }
+
+  .company-code-sub {
+    font-size: 0.7rem;
+  }
+
+  .matrix-table th.year-col-header {
+    min-width: 60px;
+    font-size: 0.85rem;
+  }
+
+  .matrix-pdf-icon-btn {
+    width: 32px;
+    height: 32px;
+  }
+
+  .matrix-pdf-icon-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+
+  .login-card {
+    padding: 1.85rem 1.35rem;
+  }
+
+  .login-top-nav {
+    top: 1rem;
+    right: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0.85rem 0.5rem;
+  }
+
+  .header-title {
+    font-size: 1.45rem;
+  }
+
+  .header-subtitle {
+    font-size: 0.825rem;
+  }
+
+  .matrix-table .sticky-col {
+    min-width: 155px;
+    max-width: 180px;
+  }
+
+  .company-name-text {
     font-size: 0.78rem;
   }
 
-  .bse-sub-details {
-    flex-direction: column;
-    gap: 0.2rem;
+  .remove-comp-btn {
+    padding: 0.2rem;
   }
-}
-
-.company-header-title {
-  font-size: 1.05rem;
-}
-
-.meta-pill {
-  font-size: 0.75rem;
-  padding: 0.25rem 0.55rem;
-}
-
-/* Year filter stacks on very small screens */
-.filter-controls {
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.year-select-wrapper {
-  font-size: 0.8rem;
-}
-
-.year-dropdown {
-  font-size: 0.825rem;
-  padding: 0.4rem 0.75rem;
-}
-
-.reports-count {
-  font-size: 0.775rem;
-}
-
-.reports-table {
-  min-width: 420px;
-}
-
-.reports-table th {
-  padding: 0.75rem 0.9rem;
-  font-size: 0.78rem;
-}
-
-.reports-table td {
-  padding: 0.75rem 0.9rem;
-  font-size: 0.85rem;
-}
-
-.btn {
-  padding: 0.5rem 0.9rem;
-  font-size: 0.8rem;
-  gap: 0.35rem;
-}
-
-.loading-box,
-.empty-box {
-  padding: 2.5rem 1.25rem;
-  font-size: 0.9rem;
-}
-
-.preset-container {
-  justify-content: flex-start;
-  font-size: 0.78rem;
-}
-
-.bse-sub-details {
-  flex-direction: column;
-  gap: 0.2rem;
-}
 }
 
 /* =========================================
