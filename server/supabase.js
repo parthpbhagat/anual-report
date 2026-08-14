@@ -29,24 +29,29 @@ export async function saveReportsToSupabase(scripCode, companyMeta, reports) {
   }
 
   try {
+    const cleanScripCode = String(scripCode).trim();
+    const cleanName = (companyMeta?.name || `Company ${cleanScripCode}`).substring(0, 255).trim();
+    const cleanSymbol = (companyMeta?.symbol || '').substring(0, 50).trim();
+
     // 1. Upsert Company info
     const { error: companyError } = await supabase
       .from('companies')
       .upsert({
-        scrip_code: scripCode,
-        name: companyMeta?.name || `Company ${scripCode}`,
-        symbol: companyMeta?.symbol || '',
+        scrip_code: cleanScripCode,
+        name: cleanName,
+        symbol: cleanSymbol,
         last_synced: new Date().toISOString()
       }, { onConflict: 'scrip_code' });
 
     if (companyError) {
       console.error('[Supabase] Company upsert error:', companyError);
+      return { success: false, error: companyError };
     }
 
     // 2. Format annual report records
     const reportRows = reports.map(r => ({
-      scrip_code: scripCode,
-      year: r.year || 'N/A',
+      scrip_code: cleanScripCode,
+      year: String(r.year || 'N/A').trim(),
       file_name: r.fileName || '',
       raw_date: r.rawDate || '',
       pdf_url: r.pdfUrl || '',
