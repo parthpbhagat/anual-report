@@ -120,6 +120,9 @@ export default function App() {
       };
       setCompanies(prev => [newCompany, ...prev]);
       fetchCompanyReports(company.scripCode);
+    } else {
+      // Latest selected company moves to the top of the table
+      setCompanies(prev => [existing, ...prev.filter(c => c.scripCode !== company.scripCode)]);
     }
     setQuery('');
     setShowDropdown(false);
