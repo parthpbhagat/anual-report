@@ -53,7 +53,20 @@ async function checkDatabaseStats() {
       } else {
         console.log(`   ✅ Supabase Cloud Status: ONLINE & READY!`);
         console.log(`   ├─ Supabase Total Companies: ${companiesCount || 0}`);
-        console.log(`   └─ Supabase Total Saved PDF Links: ${reportsCount || 0}`);
+        console.log(`   └─ Supabase Total Saved PDF Links: ${reportsCount || 0}\n`);
+
+        // Fetch sample companies from Supabase
+        const { data: sampleSupabaseComp } = await supabase
+          .from('companies')
+          .select('scrip_code, name, symbol, last_synced')
+          .limit(10);
+
+        if (sampleSupabaseComp && sampleSupabaseComp.length > 0) {
+          console.log(`   📋 Sample Companies Stored in Supabase Cloud:`);
+          sampleSupabaseComp.forEach((c, idx) => {
+            console.log(`      ${idx + 1}. ${c.name} (Code: ${c.scrip_code}) ${c.symbol ? `| ${c.symbol}` : ''}`);
+          });
+        }
       }
     } catch (err) {
       console.log(`   ⚠️ Supabase Error: ${err.message}`);
