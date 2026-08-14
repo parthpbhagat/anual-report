@@ -7,8 +7,12 @@ import {
   Building2,
   Sun,
   Moon,
-  Plus
+  Plus,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
+import LoginPage from './components/LoginPage.jsx';
+import { ENABLE_AUTH } from './config.js';
 
 // Official BSE-style Red PDF Icon
 function BsePdfIcon({ size = 24 }) {
@@ -73,6 +77,13 @@ export default function App() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
+  // Authentication state (controlled via config.js ENABLE_AUTH toggle)
+  const [isAuthenticated, setIsAuthenticated] = useState(() => {
+    if (!ENABLE_AUTH) return true;
+    return localStorage.getItem('isLoggedIn') === 'true';
+  });
+  const [currentUser, setCurrentUser] = useState(() => localStorage.getItem('username') || '');
+
   // Companies matrix list with loaded annual report PDFs
   const [companies, setCompanies] = useState(
     INITIAL_COMPANIES.map(c => ({ ...c, reports: [], isLoading: true }))
@@ -89,6 +100,20 @@ export default function App() {
 
   const toggleTheme = () => {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  const handleLoginSuccess = (username) => {
+    localStorage.setItem('isLoggedIn', 'true');
+    localStorage.setItem('username', username);
+    setIsAuthenticated(true);
+    setCurrentUser(username);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem('isLoggedIn');
+    localStorage.removeItem('username');
+    setIsAuthenticated(false);
+    setCurrentUser('');
   };
 
   // Load annual reports for initial companies on startup
@@ -236,10 +261,31 @@ export default function App() {
     ? allYears
     : ['2026', '2025', '2024', '2023', '2022', '2021', '2020'];
 
+  // If Auth is enabled and user is not logged in, render LoginPage
+  if (ENABLE_AUTH && !isAuthenticated) {
+    return (
+      <LoginPage
+        onLoginSuccess={handleLoginSuccess}
+        theme={theme}
+        toggleTheme={toggleTheme}
+      />
+    );
+  }
+
   return (
     <div className="app-container">
-      {/* Top Navbar with Theme Toggle */}
-      <nav className="top-navbar">
+      {/* Top Navbar with User Info & Theme Toggle */}
+      <nav className="top-navbar" style={{ gap: '1rem', alignItems: 'center' }}>
+        {ENABLE_AUTH && isAuthenticated && (
+          <div className="user-status-pill">
+            <UserCheck size={15} color="var(--accent-primary)" />
+            <span>User: <strong>{currentUser || 'Admin'}</strong></span>
+            <button className="logout-btn" onClick={handleLogout} title="Sign Out">
+              <LogOut size={13} /> Sign Out
+            </button>
+          </div>
+        )}
+
         <button
           className="theme-toggle-btn"
           onClick={toggleTheme}
