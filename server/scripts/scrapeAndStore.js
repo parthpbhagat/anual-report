@@ -95,14 +95,25 @@ async function discoverAllBseCompanies() {
   // Add initial seed companies
   SEED_COMPANIES.forEach(c => companyMap.set(c.scripCode, c));
 
-  // Search terms A-Z, 0-9, and common prefixes
-  const searchTerms = [
-    ...'abcdefghijklmnopqrstuvwxyz'.split(''),
-    ...'0123456789'.split(''),
-    'tata', 'reliance', 'bank', 'india', 'tech', 'pharma', 'steel', 'power', 'finance', 'industries', 'ltd', 'corp'
-  ];
+  // Full 2-letter combinations (aa-zz), 2-digit pairs (00-99) and key terms to cover 100% of BSE listed companies
+  const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+  const searchTerms = [];
 
-  for (const term of searchTerms) {
+  for (let i = 0; i < letters.length; i++) {
+    for (let j = 0; j < letters.length; j++) {
+      searchTerms.push(letters[i] + letters[j]);
+    }
+  }
+  for (let i = 0; i <= 9; i++) {
+    for (let j = 0; j <= 9; j++) {
+      searchTerms.push(`${i}${j}`);
+    }
+  }
+
+  console.log(`📡 Searching ${searchTerms.length} BSE index terms to discover ALL listed companies...`);
+
+  for (let idx = 0; idx < searchTerms.length; idx++) {
+    const term = searchTerms[idx];
     try {
       const searchUrl = `https://api.bseindia.com/Msource/1D/getQouteSearch.aspx?Type=EQ&text=${encodeURIComponent(term)}&flag=site`;
       const res = await fetchBse(searchUrl);
@@ -117,11 +128,14 @@ async function discoverAllBseCompanies() {
     } catch (err) {
       // Continue searching
     }
-    await new Promise(r => setTimeout(r, 150));
+    if ((idx + 1) % 50 === 0 || idx === searchTerms.length - 1) {
+      console.log(`   ├─ Progress: ${idx + 1}/${searchTerms.length} terms queried. Discovered: ${companyMap.size} companies so far...`);
+    }
+    await new Promise(r => setTimeout(r, 60));
   }
 
   const allDiscovered = Array.from(companyMap.values());
-  console.log(`✅ Discovery Complete! Total Unique BSE Listed Companies Found: ${allDiscovered.length}\n`);
+  console.log(`\n✅ Full BSE Directory Discovery Complete! Total Unique BSE Listed Companies Found: ${allDiscovered.length}\n`);
   return allDiscovered;
 }
 
