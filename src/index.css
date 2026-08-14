@@ -787,33 +787,40 @@ body {
   background: rgba(239, 68, 68, 0.15);
 }
 
-/* PDF Icon Button in Matrix Cells */
+/* Red BSE PDF Icon Button in Matrix Cells */
 .matrix-pdf-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 38px;
   height: 38px;
-  background: var(--badge-bg);
-  border: 1px solid var(--badge-border);
-  color: var(--accent-primary);
-  border-radius: 10px;
+  background: rgba(220, 38, 38, 0.06);
+  border: 1px solid rgba(220, 38, 38, 0.22);
+  border-radius: 9px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  text-decoration: none;
 }
 
 [data-theme="light"] .matrix-pdf-icon-btn {
-  background: #eff6ff;
-  border-color: #bfdbfe;
-  color: #2563eb;
+  background: #fef2f2;
+  border-color: #fca5a5;
 }
 
 .matrix-pdf-icon-btn:hover {
-  background: var(--accent-gradient) !important;
-  color: #ffffff !important;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%) !important;
   border-color: transparent !important;
-  transform: translateY(-2px) scale(1.08);
-  box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+  transform: translateY(-2px) scale(1.1);
+  box-shadow: 0 4px 14px rgba(220, 38, 38, 0.4);
+}
+
+.matrix-pdf-icon-btn:hover .bse-pdf-svg path {
+  stroke: #ffffff !important;
+  fill: rgba(255, 255, 255, 0.2) !important;
+}
+
+.matrix-pdf-icon-btn:hover .bse-pdf-svg text {
+  fill: #ffffff !important;
 }
 
 

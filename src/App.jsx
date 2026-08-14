@@ -10,6 +10,48 @@ import {
   Plus
 } from 'lucide-react';
 
+// Official BSE-style Red PDF Icon
+function BsePdfIcon({ size = 24 }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="bse-pdf-svg"
+    >
+      <path
+        d="M14 2H6C4.89543 2 4 2.89543 4 4V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V8L14 2Z"
+        fill="rgba(220, 38, 38, 0.1)"
+        stroke="#dc2626"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 2V8H20"
+        stroke="#dc2626"
+        strokeWidth="1.8"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <text
+        x="12"
+        y="17.2"
+        fill="#dc2626"
+        fontSize="6.5"
+        fontWeight="900"
+        fontFamily="system-ui, -apple-system, sans-serif"
+        textAnchor="middle"
+        letterSpacing="0.03em"
+      >
+        PDF
+      </text>
+    </svg>
+  );
+}
+
 const INITIAL_COMPANIES = [
   { name: 'TATA POWER COMPANY LTD', symbol: 'TATAPOWER', scripCode: '500400' },
   { name: 'RELIANCE INDUSTRIES LTD', symbol: 'RELIANCE', scripCode: '500325' },
@@ -357,7 +399,7 @@ export default function App() {
                               className="matrix-pdf-icon-btn"
                               title={`Open FY ${report.year} Annual Report PDF for ${comp.name}`}
                             >
-                              <FileText size={18} />
+                              <BsePdfIcon size={24} />
                             </a>
                           ) : (
                             <span className="dash-text">—</span>
