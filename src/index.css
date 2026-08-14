@@ -715,13 +715,13 @@ body {
 
 .matrix-table th.year-col-header {
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.95rem;
   color: var(--accent-primary);
-  min-width: 140px;
+  min-width: 80px;
 }
 
 .matrix-table td {
-  padding: 1.1rem 1.35rem;
+  padding: 0.85rem 1rem;
   border-bottom: 1px solid var(--border-color);
   border-right: 1px solid var(--border-color);
   vertical-align: middle;
@@ -787,38 +787,35 @@ body {
   background: rgba(239, 68, 68, 0.15);
 }
 
-/* PDF Buttons in Matrix Cells */
-.matrix-pdf-btn {
+/* PDF Icon Button in Matrix Cells */
+.matrix-pdf-icon-btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  padding: 0.55rem 0.85rem;
+  width: 38px;
+  height: 38px;
   background: var(--badge-bg);
   border: 1px solid var(--badge-border);
   color: var(--accent-primary);
-  border-radius: 9px;
-  font-size: 0.825rem;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
+  border-radius: 10px;
   transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-[data-theme="light"] .matrix-pdf-btn {
+[data-theme="light"] .matrix-pdf-icon-btn {
   background: #eff6ff;
   border-color: #bfdbfe;
   color: #2563eb;
 }
 
-.matrix-pdf-btn:hover {
+.matrix-pdf-icon-btn:hover {
   background: var(--accent-gradient) !important;
   color: #ffffff !important;
   border-color: transparent !important;
-  transform: translateY(-2px);
+  transform: translateY(-2px) scale(1.08);
   box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
 }
+
 
 .dash-text {
   color: var(--text-muted);

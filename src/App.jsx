@@ -13,7 +13,14 @@ import {
 const INITIAL_COMPANIES = [
   { name: 'TATA POWER COMPANY LTD', symbol: 'TATAPOWER', scripCode: '500400' },
   { name: 'RELIANCE INDUSTRIES LTD', symbol: 'RELIANCE', scripCode: '500325' },
-  { name: 'TATA CONSULTANCY SERVICES LTD', symbol: 'TCS', scripCode: '532540' }
+  { name: 'TATA CONSULTANCY SERVICES LTD', symbol: 'TCS', scripCode: '532540' },
+  { name: 'INFOSYS LTD', symbol: 'INFY', scripCode: '500209' },
+  { name: 'HDFC BANK LTD', symbol: 'HDFCBANK', scripCode: '500180' },
+  { name: 'ICICI BANK LTD', symbol: 'ICICIBANK', scripCode: '532174' },
+  { name: 'STATE BANK OF INDIA', symbol: 'SBIN', scripCode: '500112' },
+  { name: 'BHARTI AIRTEL LTD', symbol: 'BHARTIARTL', scripCode: '532454' },
+  { name: 'LARSEN & TOUBRO LTD', symbol: 'LT', scripCode: '500510' },
+  { name: 'HINDUSTAN UNILEVER LTD', symbol: 'HINDUNILVR', scripCode: '500696' }
 ];
 
 export default function App() {
@@ -347,12 +354,10 @@ export default function App() {
                               href={report.pdfUrl}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="matrix-pdf-btn"
-                              title={`Open FY ${report.year} Annual Report for ${comp.name}`}
+                              className="matrix-pdf-icon-btn"
+                              title={`Open FY ${report.year} Annual Report PDF for ${comp.name}`}
                             >
-                              <FileText size={13} />
-                              <span>FY {report.year} PDF</span>
-                              <ExternalLink size={11} />
+                              <FileText size={18} />
                             </a>
                           ) : (
                             <span className="dash-text">—</span>
