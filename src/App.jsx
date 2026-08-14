@@ -7,8 +7,14 @@ import {
   Building2,
   Sun,
   Moon,
-  Filter
+  Plus
 } from 'lucide-react';
+
+const INITIAL_COMPANIES = [
+  { name: 'TATA POWER COMPANY LTD', symbol: 'TATAPOWER', scripCode: '500400' },
+  { name: 'RELIANCE INDUSTRIES LTD', symbol: 'RELIANCE', scripCode: '500325' },
+  { name: 'TATA CONSULTANCY SERVICES LTD', symbol: 'TCS', scripCode: '532540' }
+];
 
 export default function App() {
   const [theme, setTheme] = useState(() => localStorage.getItem('theme') || 'dark');
@@ -18,15 +24,10 @@ export default function App() {
   const [showDropdown, setShowDropdown] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
-  const [selectedCompany, setSelectedCompany] = useState({
-    name: 'TATA POWER COMPANY LTD',
-    symbol: 'TATAPOWER',
-    scripCode: '500400'
-  });
-
-  const [reports, setReports] = useState([]);
-  const [isLoadingReports, setIsLoadingReports] = useState(false);
-  const [selectedYear, setSelectedYear] = useState('ALL');
+  // Companies matrix list with loaded annual report PDFs
+  const [companies, setCompanies] = useState(
+    INITIAL_COMPANIES.map(c => ({ ...c, reports: [], isLoading: true }))
+  );
 
   const searchRef = useRef(null);
   const dropdownRef = useRef(null);
@@ -41,7 +42,35 @@ export default function App() {
     setTheme(prev => (prev === 'dark' ? 'light' : 'dark'));
   };
 
-  // Debounced stock search targeting BSE India quote search API
+  // Load annual reports for initial companies on startup
+  useEffect(() => {
+    INITIAL_COMPANIES.forEach(comp => {
+      fetchCompanyReports(comp.scripCode);
+    });
+  }, []);
+
+  const fetchCompanyReports = async (scripCode) => {
+    setCompanies(prev =>
+      prev.map(c => c.scripCode === scripCode ? { ...c, isLoading: true } : c)
+    );
+
+    try {
+      const res = await fetch(`/api/annual-reports/${scripCode}`);
+      const data = await res.json();
+      const reportList = Array.isArray(data) ? data : (data.reports || []);
+
+      setCompanies(prev =>
+        prev.map(c => c.scripCode === scripCode ? { ...c, reports: reportList, isLoading: false } : c)
+      );
+    } catch (err) {
+      console.error(`Failed to load reports for ${scripCode}:`, err);
+      setCompanies(prev =>
+        prev.map(c => c.scripCode === scripCode ? { ...c, reports: [], isLoading: false } : c)
+      );
+    }
+  };
+
+  // Search autocomplete debounced
   useEffect(() => {
     if (!query.trim()) {
       setSearchResults([]);
@@ -68,13 +97,6 @@ export default function App() {
     return () => clearTimeout(timer);
   }, [query]);
 
-  // Load annual reports when selected company changes
-  useEffect(() => {
-    if (selectedCompany && selectedCompany.scripCode) {
-      loadAnnualReports(selectedCompany.scripCode);
-    }
-  }, [selectedCompany]);
-
   // Close dropdown on outside click
   useEffect(() => {
     function handleClickOutside(e) {
@@ -86,30 +108,26 @@ export default function App() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const loadAnnualReports = async (scripCode) => {
-    setIsLoadingReports(true);
-    setSelectedYear('ALL');
-    try {
-      const res = await fetch(`/api/annual-reports/${scripCode}`);
-      const data = await res.json();
-      setReports(Array.isArray(data) ? data : (data.reports || []));
-    } catch (err) {
-      console.error('Failed to load annual reports:', err);
-      setReports([]);
-    } finally {
-      setIsLoadingReports(false);
-    }
-  };
-
   const handleSelectCompany = (company) => {
-    setSelectedCompany({
-      name: company.name,
-      symbol: company.symbol,
-      scripCode: company.scripCode
-    });
+    const existing = companies.find(c => c.scripCode === company.scripCode);
+    if (!existing) {
+      const newCompany = {
+        name: company.name,
+        symbol: company.symbol,
+        scripCode: company.scripCode,
+        reports: [],
+        isLoading: true
+      };
+      setCompanies(prev => [newCompany, ...prev]);
+      fetchCompanyReports(company.scripCode);
+    }
     setQuery('');
     setShowDropdown(false);
     setSelectedIndex(-1);
+  };
+
+  const handleRemoveCompany = (scripCode) => {
+    setCompanies(prev => prev.filter(c => c.scripCode !== scripCode));
   };
 
   // Keyboard navigation for BSE search suggestions
@@ -149,9 +167,11 @@ export default function App() {
     }
   };
 
-  // Available unique financial years sorted descending
-  const availableYears = Array.from(
-    new Set(reports.map(r => r.year).filter(Boolean))
+  // Compute unique financial years across all listed companies (sorted descending)
+  const allYears = Array.from(
+    new Set(
+      companies.flatMap(c => c.reports.map(r => r.year).filter(Boolean))
+    )
   ).sort((a, b) => {
     const numA = parseInt(a, 10);
     const numB = parseInt(b, 10);
@@ -159,10 +179,10 @@ export default function App() {
     return b.localeCompare(a);
   });
 
-  // Filter reports according to selected year
-  const filteredReports = selectedYear === 'ALL'
-    ? reports
-    : reports.filter(r => r.year === selectedYear);
+  // Display years (or default recent years while initial fetch finishes)
+  const displayYears = allYears.length > 0
+    ? allYears
+    : ['2026', '2025', '2024', '2023', '2022', '2021', '2020'];
 
   return (
     <div className="app-container">
@@ -189,18 +209,18 @@ export default function App() {
       <header className="header">
         <h1 className="header-title">BSE Annual Report Finder</h1>
         <p className="header-subtitle">
-          Institutional-grade search for BSE listed companies with 30+ years of historical annual financial reports.
+          Institutional-grade search & comparison directory for BSE listed companies with 30+ years of annual financial reports.
         </p>
       </header>
 
-      {/* Search Input with Keyboard Navigation */}
+      {/* Search Bar */}
       <div className="search-section" ref={searchRef}>
         <div className="search-input-wrapper">
           <Search className="search-icon" size={20} />
           <input
             type="text"
             className="search-input"
-            placeholder="Search by Company Name / Security Code / Symbol (e.g. Tata Power)..."
+            placeholder="Search & add company to table (e.g. Tata Power, Reliance, TCS)..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             onKeyDown={handleKeyDown}
@@ -213,7 +233,7 @@ export default function App() {
           )}
         </div>
 
-        {/* BSE India Style Autocomplete Dropdown */}
+        {/* BSE Autocomplete Dropdown */}
         {showDropdown && (
           <div className="autocomplete-dropdown" ref={dropdownRef}>
             {isSearching ? (
@@ -229,22 +249,14 @@ export default function App() {
                   onClick={() => handleSelectCompany(item)}
                   onMouseEnter={() => setSelectedIndex(idx)}
                 >
-                  {/* Top Line: Company Name */}
                   <div
                     className="bse-company-name"
                     dangerouslySetInnerHTML={{ __html: item.rawNameHtml || item.name }}
                   />
-
-                  {/* Sub Line: Symbol | ISIN | Security Code */}
                   <div className="bse-sub-details">
                     {item.symbol && (
                       <span className="bse-sub-pill">
                         <span>Symbol:</span> <strong>{item.symbol}</strong>
-                      </span>
-                    )}
-                    {item.isin && (
-                      <span className="bse-sub-pill">
-                        <span>ISIN:</span> {item.isin}
                       </span>
                     )}
                     <span className="bse-sub-pill">
@@ -263,104 +275,102 @@ export default function App() {
 
         {/* Popular Presets */}
         <div className="preset-container">
-          <span>Popular Searches:</span>
-          <button
-            className="preset-chip"
-            onClick={() => handleSelectCompany({ name: 'TATA POWER COMPANY LTD', symbol: 'TATAPOWER', scripCode: '500400' })}
-          >
-            Tata Power (500400)
-          </button>
-          <button
-            className="preset-chip"
-            onClick={() => handleSelectCompany({ name: 'RELIANCE INDUSTRIES LTD', symbol: 'RELIANCE', scripCode: '500325' })}
-          >
-            Reliance (500325)
-          </button>
-          <button
-            className="preset-chip"
-            onClick={() => handleSelectCompany({ name: 'TATA CONSULTANCY SERVICES LTD', symbol: 'TCS', scripCode: '532540' })}
-          >
-            TCS (532540)
-          </button>
+          <span>Click to add company:</span>
+          {INITIAL_COMPANIES.map(comp => (
+            <button
+              key={comp.scripCode}
+              className="preset-chip"
+              onClick={() => handleSelectCompany(comp)}
+            >
+              <Plus size={12} /> {comp.name.split(' ')[0]} ({comp.scripCode})
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Selected Company Header */}
-      {selectedCompany && (
-        <div className="selected-company-card">
-          <div style={{ width: '100%' }}>
-            <h2 className="company-header-title">{selectedCompany.name}</h2>
-            <div className="company-meta-pills">
-              <div className="meta-pill">
-                <Building2 size={14} /> Security Code: <strong>{selectedCompany.scripCode}</strong>
-              </div>
-              {selectedCompany.symbol && (
-                <div className="meta-pill">
-                  Symbol: <strong>{selectedCompany.symbol}</strong>
-                </div>
-              )}
-              <div className="meta-pill">
-                Source: <strong>BSE India Financial Directory</strong>
-              </div>
-            </div>
-
-            {/* Annual Report PDF Link Buttons with Inline Year Filter */}
-            <div className="company-pdf-section">
-              <div className="pdf-section-header">
-                <div className="pdf-section-label">
-                  <FileText size={16} color="var(--accent-primary)" />
-                  <span>Company Annual Report PDFs ({filteredReports.length}):</span>
-                </div>
-
-                {availableYears.length > 0 && (
-                  <div className="year-filter-wrapper">
-                    <Filter size={14} color="var(--accent-primary)" />
-                    <label htmlFor="pdfYearFilter">Filter Year:</label>
-                    <select
-                      id="pdfYearFilter"
-                      className="year-dropdown"
-                      value={selectedYear}
-                      onChange={(e) => setSelectedYear(e.target.value)}
-                    >
-                      <option value="ALL">All Years ({reports.length})</option>
-                      {availableYears.map(yr => (
-                        <option key={yr} value={yr}>FY {yr}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              {isLoadingReports ? (
-                <div className="pdf-buttons-loading">
-                  <div className="spinner-sm"></div> Fetching PDF links for {selectedCompany.name}...
-                </div>
-              ) : filteredReports.length > 0 ? (
-                <div className="pdf-buttons-list">
-                  {filteredReports.map((report, idx) => (
-                    <a
-                      key={idx}
-                      href={report.pdfUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="company-pdf-btn"
-                      title={`Click to open FY ${report.year} Annual Report PDF for ${selectedCompany.name}`}
-                    >
-                      <FileText size={14} />
-                      <span>FY {report.year} PDF</span>
-                      <ExternalLink size={12} />
-                    </a>
-                  ))}
-                </div>
-              ) : (
-                <span className="no-pdf-text">No PDF files available for the selected filter.</span>
-              )}
-            </div>
+      {/* Handwritten Diagram Layout: Matrix Table */}
+      <div className="matrix-card">
+        <div className="matrix-header">
+          <div className="matrix-title">
+            <Building2 size={20} color="var(--accent-primary)" />
+            <span>Company Financial Reports Directory</span>
           </div>
+          <span className="reports-count">{companies.length} Companies Listed</span>
         </div>
-      )}
+
+        <div className="matrix-scroll-wrapper">
+          <table className="matrix-table">
+            <thead>
+              <tr>
+                <th className="sticky-col">Company Name</th>
+                {displayYears.map(yr => (
+                  <th key={yr} className="year-col-header">{yr}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {companies.length > 0 ? (
+                companies.map((comp) => (
+                  <tr key={comp.scripCode}>
+                    {/* First Sticky Column: Company Name */}
+                    <td className="sticky-col company-cell">
+                      <div className="company-cell-content">
+                        <div>
+                          <div className="company-name-text">{comp.name}</div>
+                          <div className="company-code-sub">Code: {comp.scripCode} {comp.symbol ? `| ${comp.symbol}` : ''}</div>
+                        </div>
+                        <button
+                          className="remove-comp-btn"
+                          onClick={() => handleRemoveCompany(comp.scripCode)}
+                          title="Remove company from table"
+                        >
+                          <X size={14} />
+                        </button>
+                      </div>
+                    </td>
+
+                    {/* Year Columns: PDF Buttons matching the user diagram */}
+                    {displayYears.map(yr => {
+                      const report = comp.reports.find(
+                        r => String(r.year) === String(yr)
+                      );
+
+                      return (
+                        <td key={yr} className="year-cell">
+                          {comp.isLoading ? (
+                            <div className="spinner-sm" style={{ margin: '0 auto' }}></div>
+                          ) : report ? (
+                            <a
+                              href={report.pdfUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="matrix-pdf-btn"
+                              title={`Open FY ${report.year} Annual Report for ${comp.name}`}
+                            >
+                              <FileText size={13} />
+                              <span>FY {report.year} PDF</span>
+                              <ExternalLink size={11} />
+                            </a>
+                          ) : (
+                            <span className="dash-text">—</span>
+                          )}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan={displayYears.length + 1} className="empty-matrix-td">
+                    <FileText size={36} style={{ opacity: 0.3, marginBottom: '0.5rem' }} />
+                    <p>No companies added yet. Search and add a company above!</p>
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
   );
 }
-
-
