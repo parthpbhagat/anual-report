@@ -112,17 +112,6 @@ export default function LoginPage({ onLoginSuccess, theme, toggleTheme }) {
             )}
           </button>
         </form>
-
-        <div className="login-demo-box">
-          <p className="demo-title">Default Demo Credentials:</p>
-          <div className="demo-credentials-tag">
-            <span>Username: <strong>{DEFAULT_CREDENTIALS.username}</strong></span>
-            <span>Password: <strong>{DEFAULT_CREDENTIALS.password}</strong></span>
-          </div>
-          <button type="button" className="quick-demo-btn" onClick={handleQuickDemoLogin}>
-            ⚡ 1-Click Quick Login
-          </button>
-        </div>
       </div>
     </div>
   );
