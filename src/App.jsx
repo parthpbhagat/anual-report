@@ -371,19 +371,6 @@ export default function App() {
           </div>
         )}
 
-        {/* Popular Presets */}
-        <div className="preset-container">
-          <span>Click to add company:</span>
-          {INITIAL_COMPANIES.map(comp => (
-            <button
-              key={comp.scripCode}
-              className="preset-chip"
-              onClick={() => handleSelectCompany(comp)}
-            >
-              <Plus size={12} /> {comp.name.split(' ')[0]} ({comp.scripCode})
-            </button>
-          ))}
-        </div>
       </div>
 
       {/* Handwritten Diagram Layout: Matrix Table */}
